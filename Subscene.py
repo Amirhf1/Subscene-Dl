@@ -18,16 +18,16 @@ movieEncode = str(input('Enter Movie Encode [Example: BluRay]: '))
 movieResolution = str(input('Enter Movie Resolution [Example: 1080p]: '))
 
 baseUrl = 'https://subscene.com'
-searchUrl = baseUrl + '/subtitles/searchbytitle?query=%s' % movieName
+searchUrl = baseUrl + f'/subtitles/searchbytitle?query={movieName}'
 searchPage = requests.get(searchUrl)
 soup = BeautifulSoup(searchPage.content, 'html.parser')
 
 searchFound0 = soup.find_all('div', {'class' : 'title'})[0].find('a')
 searchFound1 = soup.find_all('div', {'class' : 'title'})[1].find('a')
 searchFound2 = soup.find_all('div', {'class' : 'title'})[2].find('a')
-
-print('\nYou have searched for %s\n' % movieName.replace('+', ' '))
-print('1. %s\n2. %s\n3. %s' %(searchFound0.text, searchFound1.text, searchFound2.text))
+movieName = movieName.replace('+', ' ')
+print(f'\nYou searched for {movieName}\n')
+print(f'1. {searchFound0.text}\n2. {searchFound1.text}\n3. {searchFound2.text}')
 userSelection = str(input('Please Select: '))
 if userSelection == '1' :
     movieUrl = baseUrl + soup.find_all('div', {'class' : 'title'})[0].find('a')['href'] + '/farsi_persian'
@@ -55,14 +55,14 @@ for item in subs:
         # movieFullName = soup.find('span', {'itemprop' : 'name'}).text.strip()
         downloadUrl = baseUrl + soup.find('a', {'id' : 'downloadButton'})['href']
         downloadLink = requests.get(downloadUrl).content
-        subtitleName = 'Subtitle%s.zip' %subCounter
+        subtitleName = f'Subtitle{subCounter}.zip'
         with open(subtitleName, 'wb') as f :
             f.write(downloadLink)
         zip = ZipFile(subtitleName)
-        zip.extractall('%s Subtitles' % movieName.replace('+', ' '))
+        zip.extractall(f'{movieName} Subtitles')
         zip.close()
         counter += 1
     else :
         continue
 
-print('\n%i Subtitle found.' %counter)
+print(f'\n{counter} Subtitle found.')
